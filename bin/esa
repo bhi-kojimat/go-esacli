@@ -1,0 +1,74 @@
+#!/bin/bash --posix
+
+set -o posix
+set -o pipefail
+set -ue
+
+function __main {
+  path=
+  tmpl_path=
+  esa_wip=
+  esa_tags=
+
+  while [[ $# -gt 0 ]]
+  do
+    case $1 in
+      -t|--template)
+        tmpl_path=$2
+        shift
+        ;;
+      -t=*|--template=*)
+        tmpl_path=${1#*=}
+        ;;
+      --wip)
+        esa_wip=1
+        ;;
+      --tags=*)
+        esa_tags=${1#*=}
+        ;;
+      *)
+        path=$1
+        ;;
+    esac
+    shift || {
+      printf "[%5s] failed parse argument: %s\n" ERROR "$1" 1>&2
+    }
+  done
+
+  if [[ -z ${path} ]]
+  then
+    printf "[%5s] not found path: %s\n" ERROR "${path}" 1>&2
+    return 2
+  fi
+  if [[ -n ${tmpl_path} ]] && [[ ! -f ${tmpl_path} ]]
+  then
+    printf "[%5s] not found template: %s\n" ERROR "${tmpl_path}" 1>&2
+    return 2
+  fi
+
+  post="$(mktemp --suffix .md)"
+  if go-esacli --path "${path}" > "${post}"
+  then
+    printf "[%5s] found post. update: %s\n" INFO "${path}" 1>&2
+  else
+    printf "[%5s] not found post. create: %s\n" INFO "${path}" 1>&2
+
+    if [[ -n ${tmpl_path} ]] && [[ -f ${tmpl_path} ]]
+    then cat "${tmpl_path}" > "${post}"
+    fi
+  fi
+  cp "${post}" "${post}.prev"
+
+  "${EDITOR:-vim}" "${post}"
+  if diff -u "${post}.prev" "${post}"
+  then printf "[%5s] no updated: %s\n" INFO "${path}" 1>&2
+  else
+    go-esacli --path "${path}" --input "${post}" \
+      "$([[ -z ${esa_wip} ]] || echo "--wip"; )" \
+      "$([[ -z ${esa_tags} ]] || echo "--tags=${esa_tags}"; )"
+  fi
+
+  rm "${post}.prev" "${post}"
+}
+
+__main "${@}"

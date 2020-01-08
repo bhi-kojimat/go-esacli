@@ -1,0 +1,4 @@
+github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
+github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+github.com/upamune/go-esa v0.0.0-20170528094022-b989405b568d h1:shOS3RpH8Io4JNya1QpVs1ahXxDCF2TaXv2/POGFwKI=
+github.com/upamune/go-esa v0.0.0-20170528094022-b989405b568d/go.mod h1:+joqnPGaqPghyGsC1jgQaI103zdTHAMA69u+lEfFkfQ=
