@@ -73,8 +73,7 @@ func NewEsaClient(options ...EsaOptionFunc) EsaClient {
 }
 
 func (c EsaClient) FindPosts(path string, out io.Writer) error {
-	category := filepath.Dir(path)
-	name := filepath.Base(path)
+	category, name := filepath.Dir(path), filepath.Base(path)
 
 	query := url.Values{}
 	query.Add("category", category)
@@ -107,8 +106,7 @@ func (c EsaClient) WritePost(path string, in io.Reader, options ...EsaPostOption
 		return fmt.Errorf("failed to read contents: %w", err)
 	}
 
-	category := filepath.Dir(path)
-	name := filepath.Base(path)
+	category, name := filepath.Dir(path), filepath.Base(path)
 
 	query := url.Values{}
 	query.Add("category", category)
@@ -121,8 +119,9 @@ func (c EsaClient) WritePost(path string, in io.Reader, options ...EsaPostOption
 
 	req := esa.Post{}
 	req.Name = name
-	req.BodyMd = string(content)
 	req.Category = category
+	req.BodyMd = string(content)
+
 	for _, op := range options {
 		req = op(req)
 	}
