@@ -148,3 +148,39 @@ func (c EsaClient) WritePost(path string, in io.Reader, options ...EsaPostOption
 
 	return nil
 }
+
+func (c EsaClient) MovePost(from, to string) error {
+	category, name := filepath.Dir(from), filepath.Base(from)
+
+	query := url.Values{}
+	query.Add("category", category)
+	query.Add("name", name)
+
+	resp, err := c.Client.Post.GetPosts(c.Team, query)
+	if err != nil {
+		return fmt.Errorf("failed to access esa: %w", err)
+	}
+
+	if len(resp.Posts) == 0 {
+		return fmt.Errorf("not found posts: %s", from)
+	}
+
+	if len(resp.Posts) > 1 {
+		return fmt.Errorf("too many match posts: %s", from)
+	}
+
+	req := esa.Post{}
+	req.Name = name
+	req.Category = category
+	req.BodyMd = resp.Posts[0].BodyMd
+
+	id := resp.Posts[0].Number
+	log.Printf("Update /posts/%d\n", id)
+
+	_, err = c.Client.Post.Update(c.Team, id, req)
+	if err != nil {
+		return fmt.Errorf("failed to write posts: %w", err)
+	}
+
+	return nil
+}
