@@ -9,6 +9,11 @@ import (
 	"os"
 )
 
+const (
+	pathOnlyArgsSize    = 1
+	fileAndPathArgsSize = 2
+)
+
 type writeCommand struct {
 	*flag.FlagSet
 
@@ -42,11 +47,11 @@ func (cmd writeCommand) Run() error {
 	)
 
 	switch len(args) {
-	case 1:
+	case pathOnlyArgsSize:
 		in = os.Stdin
 		path = args[0]
 
-	case 2:
+	case fileAndPathArgsSize:
 		fp, err := os.Open(args[0])
 		if err != nil {
 			log.Fatal(err)
@@ -60,5 +65,6 @@ func (cmd writeCommand) Run() error {
 	}
 
 	c := NewEsaClient(EsaUsingTeam(cmd.Team), EsaUsingAPIKey(cmd.Token))
+
 	return c.WritePost(path, in, EsaPostIsWip(cmd.Wip), EsaPostUsingTags(cmd.Tags))
 }

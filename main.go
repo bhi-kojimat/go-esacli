@@ -5,6 +5,10 @@ import (
 	"os"
 )
 
+const (
+	requireMainArgsSize = 2
+)
+
 type command interface {
 	Parse([]string) error
 	Run() error
@@ -13,7 +17,7 @@ type command interface {
 func main() {
 	var cmd command
 
-	if len(os.Args) < 2 {
+	if len(os.Args) < requireMainArgsSize {
 		log.Fatal("require sub command. read/write")
 	}
 
@@ -31,6 +35,7 @@ func main() {
 	if err := cmd.Parse(os.Args[2:]); err != nil {
 		log.Fatal(err)
 	}
+
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
 	}
