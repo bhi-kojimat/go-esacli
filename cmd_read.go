@@ -25,11 +25,13 @@ func newReadCommand() readCommand {
 
 func (cmd readCommand) Run() error {
 	c := NewEsaClient(EsaUsingTeam(cmd.Team), EsaUsingAPIKey(cmd.Token))
+
 	for _, path := range cmd.Args() {
 		err := c.FindPosts(path, os.Stdout)
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }

@@ -12,6 +12,10 @@ import (
 	"github.com/upamune/go-esa/esa"
 )
 
+const (
+	requirePostsSize = 1
+)
+
 type EsaClient struct {
 	*esa.Client
 
@@ -89,7 +93,7 @@ func (c EsaClient) FindPosts(path string, out io.Writer) error {
 		return fmt.Errorf("not found: %s, %w", path, err)
 	}
 
-	if len(resp.Posts) > 1 {
+	if len(resp.Posts) != requirePostsSize {
 		return fmt.Errorf("too many match posts: %s", path)
 	}
 
@@ -123,6 +127,7 @@ func (c EsaClient) WritePost(path string, in io.Reader, options ...EsaPostOption
 	req.Name = name
 	req.BodyMd = string(content)
 	req.Category = category
+
 	for _, op := range options {
 		req = op(req)
 	}
@@ -134,7 +139,7 @@ func (c EsaClient) WritePost(path string, in io.Reader, options ...EsaPostOption
 		}
 	}
 
-	if len(resp.Posts) > 1 {
+	if len(resp.Posts) != requirePostsSize {
 		return fmt.Errorf("too many match posts: %s", path)
 	}
 
