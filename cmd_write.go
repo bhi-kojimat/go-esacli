@@ -24,7 +24,7 @@ type writeCommand struct {
 	Tags string
 }
 
-func newWriteCommand() writeCommand {
+func parseWriteCommand(args []string) (writeCommand, error) {
 	cmd := writeCommand{
 		FlagSet: flag.NewFlagSet("write", flag.ExitOnError),
 	}
@@ -35,7 +35,7 @@ func newWriteCommand() writeCommand {
 	cmd.StringVar(&cmd.Tags, "tags", "", "")
 	cmd.BoolVar(&cmd.Wip, "wip", false, "")
 
-	return cmd
+	return cmd, cmd.Parse(args)
 }
 
 func (cmd writeCommand) Run() error {

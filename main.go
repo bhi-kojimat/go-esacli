@@ -1,42 +1,43 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"os"
 )
 
 const (
-	requireMainArgsSize = 2
+	requireMainArgsSize = 1
 )
 
 type command interface {
-	Parse([]string) error
 	Run() error
 }
 
 func main() {
-	var cmd command
-
-	if len(os.Args) < requireMainArgsSize {
-		log.Fatal("require sub command. read/write")
-	}
-
-	switch os.Args[1] {
-	case "read":
-		cmd = newReadCommand()
-
-	case "write":
-		cmd = newWriteCommand()
-
-	default:
-		log.Fatalf("unsupported command: %s", os.Args[1])
-	}
-
-	if err := cmd.Parse(os.Args[2:]); err != nil {
+	cmd, err := parseCommand(os.Args)
+	if err != nil {
 		log.Fatal(err)
 	}
 
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func parseCommand(args []string) (command, error) {
+	if len(args) < requireMainArgsSize {
+		return nil, errors.New("require sub command. read/write")
+	}
+
+	switch args[1] {
+	case "read":
+		return parseReadCommand(args[2:])
+
+	case "write":
+		return parseWriteCommand(args[2:])
+
+	default:
+		return parseReadCommand(args[1:])
 	}
 }

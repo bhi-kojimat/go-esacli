@@ -12,7 +12,7 @@ type readCommand struct {
 	Token string
 }
 
-func newReadCommand() readCommand {
+func parseReadCommand(args []string) (readCommand, error) {
 	cmd := readCommand{
 		FlagSet: flag.NewFlagSet("read", flag.ExitOnError),
 	}
@@ -20,7 +20,7 @@ func newReadCommand() readCommand {
 	cmd.StringVar(&cmd.Team, "team", os.Getenv("ESA_TEAM"), "")
 	cmd.StringVar(&cmd.Token, "token", os.Getenv("ESA_TOKEN"), "")
 
-	return cmd
+	return cmd, cmd.Parse(args)
 }
 
 func (cmd readCommand) Run() error {
