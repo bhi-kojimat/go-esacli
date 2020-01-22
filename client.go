@@ -137,6 +137,8 @@ func (c EsaClient) WritePost(path string, in io.Reader, options ...EsaPostOption
 		if err != nil {
 			return fmt.Errorf("failed to write posts: %w", err)
 		}
+
+		return nil
 	}
 
 	if len(resp.Posts) != requirePostsSize {
