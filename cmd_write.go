@@ -61,7 +61,7 @@ func (cmd writeCommand) Run() error {
 		path = args[1]
 
 	default:
-		return errors.New("require filename and esa catetory/esa pagename")
+		return errors.New("require filename and catetory/pagename")
 	}
 
 	c := NewEsaClient(EsaUsingTeam(cmd.Team), EsaUsingAPIKey(cmd.Token))
