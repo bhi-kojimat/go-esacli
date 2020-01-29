@@ -133,10 +133,12 @@ func (c EsaClient) WritePost(path string, in io.Reader, options ...EsaPostOption
 	}
 
 	if len(resp.Posts) == 0 {
-		_, err := c.Client.Post.Create(c.Team, req)
+		created, err := c.Client.Post.Create(c.Team, req)
 		if err != nil {
 			return fmt.Errorf("failed to write posts: %w", err)
 		}
+
+		log.Printf("Create /posts/%d\n", created.Number)
 
 		return nil
 	}
@@ -146,12 +148,13 @@ func (c EsaClient) WritePost(path string, in io.Reader, options ...EsaPostOption
 	}
 
 	id := resp.Posts[0].Number
-	log.Printf("Update /posts/%d\n", id)
 
-	_, err = c.Client.Post.Update(c.Team, id, req)
+	updated, err := c.Client.Post.Update(c.Team, id, req)
 	if err != nil {
 		return fmt.Errorf("failed to write posts: %w", err)
 	}
+
+	log.Printf("Update /posts/%d\n", updated.Number)
 
 	return nil
 }
